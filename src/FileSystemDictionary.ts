@@ -1,17 +1,17 @@
 import { Dirent } from "fs"
 import {
+    create,
     IUnsafeDictionary,
     IUnsafePromise,
+    Stream,
     UnsafeEntryAlreadyExistsError,
     UnsafeEntryDoesNotExistError,
+    UnsafePromise,
     UnsafeTwoWayError
-} from "pareto-api"
+} from "pareto"
 import * as Path from "path"
-import { Stream } from "../classes/Stream"
-import { UnsafePromise } from "../classes/UnsafePromise"
-import { createUnsafePromise } from "../create/Promise/Unsafe/createUnsafePromise"
-import { streamifyArray } from "../create/Stream/streamifyArray"
-import { functions as pfs } from "../wrappers/fs/generated/fsErrors"
+//import { streamifyArray } from "../create/Stream/streamifyArray"
+import { functions as pfs } from "./generated/fsErrors"
 
 export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> implements IUnsafeDictionary<CreateData, OpenData, CustomErrorType> {
     private readonly path: string
@@ -77,14 +77,14 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
                 },
             }
         ).mapResult(files =>
-            streamifyArray(
+            create.Stream.from.Array.stream(
                 files.filter(dir => dir.isDirectory() && dir.name.endsWith(this.extension)),
                 file => file.name
             )
         )
     }
     public createEntry(dbName: string, createData: CreateData): UnsafePromise<null, UnsafeEntryAlreadyExistsError<CustomErrorType>> {
-        return createUnsafePromise.wrap(this.creator(createData)
+        return create.Promise.unsafe.wrap(this.creator(createData)
         ).mapError<UnsafeEntryAlreadyExistsError<CustomErrorType>>(error =>
             ["custom", error]
         ).try(buffer => {
