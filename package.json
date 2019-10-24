@@ -1,0 +1,32 @@
+{
+  "name": "pareto-fs",
+  "version": "0.0.1",
+  "description": "fs functionality for pareto projects",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "u2l": "ncu -u --packageFile package.json && npm install",
+    "pubMin": "rd /s /q .\\dist && tsc && npm run lint && npm version minor && npm publish && git push",
+    "lint": "tslint --project tsconfig.json ./src/*",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "corno",
+  "license": "ISC",
+  "types": "dist/index.d.ts",
+  "prepublish": "tsc",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/corno/pareto-fs.git"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "dependencies": {
+    "@types/node": "^12.11.6",
+    "pareto": "^0.19.0"
+  },
+  "devDependencies": {
+    "steroid-template-utils": "^0.2.0"
+  }
+}

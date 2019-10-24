@@ -1,0 +1,3 @@
+# mymodule
+
+# steroid-writer
