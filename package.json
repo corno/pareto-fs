@@ -1,6 +1,6 @@
 {
   "name": "pareto-fs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "fs functionality for pareto projects",
   "main": "dist/index.js",
   "scripts": {
