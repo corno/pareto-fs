@@ -77,8 +77,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
                 },
             }
         ).mapResult(files =>
-            create.Stream.from.Array.stream(
-                files.filter(dir => dir.isDirectory() && dir.name.endsWith(this.extension)),
+            create.Stream.from.Array(files.filter(dir => dir.isDirectory() && dir.name.endsWith(this.extension))).stream(
                 file => file.name
             )
         )
