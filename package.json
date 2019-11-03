@@ -4,11 +4,12 @@
   "description": "fs functionality for pareto projects",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "u2l": "ncu -u --packageFile package.json && npm install",
-    "pubMin": "rd /s /q .\\dist && tsc && npm run lint && npm version minor && git push && npm publish",
+    "build": "tsc",
     "lint": "tslint --project tsconfig.json ./src/*",
-    "build": "tsc"
+    "pubMin": "rd /s /q .\\dist && git diff --exit-code && npm run u2l && tsc && npm run lint && npm run test && npm version minor && git push && npm publish",
+    "pubPatch": "rd /s /q .\\dist && git diff --exit-code && npm run u2l && tsc && npm run lint && npm run test && npm version patch && git push && npm publish",
+    "test": "tsc && node ./dist/test",
+    "u2l": "ncu -u --packageFile package.json && npm install"
   },
   "keywords": [],
   "author": "corno",
