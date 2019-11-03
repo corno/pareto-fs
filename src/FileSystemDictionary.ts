@@ -1,19 +1,20 @@
 import { Dirent } from "fs"
 import {
     create,
-    IUnsafeDictionary,
     IUnsafePromise,
+    IUnsafeStrictDictionary,
+    result,
     Stream,
     UnsafeEntryAlreadyExistsError,
     UnsafeEntryDoesNotExistError,
     UnsafePromise,
-    UnsafeTwoWayError
+    UnsafeTwoWayError,
 } from "pareto"
 import * as Path from "path"
 //import { streamifyArray } from "../create/Stream/streamifyArray"
 import { functions as pfs } from "./generated/fsErrors"
 
-export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> implements IUnsafeDictionary<CreateData, OpenData, CustomErrorType> {
+export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> implements IUnsafeStrictDictionary<CreateData, OpenData, CustomErrorType> {
     private readonly path: string
     private readonly extension: string
     private readonly createCustomError: (fsError: NodeJS.ErrnoException) => CustomErrorType
@@ -46,7 +47,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
                 },
             }
         ).mapResult(() =>
-            null
+            result(null)
         )
     }
     public deleteEntry(dbName: string): UnsafePromise<null, UnsafeEntryDoesNotExistError<CustomErrorType>> {
@@ -61,7 +62,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
                 },
             }
         ).mapResult(() =>
-            null
+            result(null)
         )
     }
     public getKeys(): UnsafePromise<Stream<string>, CustomErrorType> {
@@ -77,14 +78,14 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
                 },
             }
         ).mapResult(files =>
-            create.Stream.from.Array(files.filter(dir => dir.isDirectory() && dir.name.endsWith(this.extension))).stream(
+            result(create.Stream.from.Array(files.filter(dir => dir.isDirectory() && dir.name.endsWith(this.extension))).stream(
                 file => file.name
-            )
+            ))
         )
     }
     public createEntry(dbName: string, createData: CreateData): UnsafePromise<null, UnsafeEntryAlreadyExistsError<CustomErrorType>> {
         return create.Promise.unsafe.wrap(this.creator(createData)
-        ).mapError<UnsafeEntryAlreadyExistsError<CustomErrorType>>(error =>
+        ).mapErrorRaw<UnsafeEntryAlreadyExistsError<CustomErrorType>>(error =>
             ["custom", error]
         ).try(buffer => {
             return pfs.writeFile.wrap<void, UnsafeEntryAlreadyExistsError<CustomErrorType>>(
@@ -100,7 +101,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
                 }
 
             ).mapResult(() =>
-                null
+                result(null)
             )
         })
     }
@@ -119,7 +120,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
             }
 
         ).mapResult(() =>
-            null
+            result(null)
         )
     }
     public getEntry(dbName: string): UnsafePromise<OpenData, UnsafeEntryDoesNotExistError<CustomErrorType>> {
@@ -134,7 +135,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
                 },
             }
         ).mapResult(data =>
-            this.opener(data)
+            result(this.opener(data))
         )
     }
     private createPath(dbName: string) {
