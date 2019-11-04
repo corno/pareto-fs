@@ -6,10 +6,11 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint --project tsconfig.json ./src/*",
-    "pubMin": "git diff --exit-code && npm run u2l && rd /s /q .\\dist && tsc && npm run lint && npm run test && npm version minor && git push && npm publish",
-    "pubPatch": "git diff --exit-code && npm run u2l && rd /s /q .\\dist && tsc && npm run lint && npm run test && npm version patch && git push && npm publish",
+    "pubMin": "git diff --exit-code ncu -u --packageFile package.json && npm install && rd /s /q .\\dist && tsc && npm run lint && npm run test && npm version minor && git push && npm publish",
+    "pubPatch": "git diff --exit-code ncu -u --packageFile package.json && npm install && rd /s /q .\\dist && tsc && npm run lint && npm run test && npm version patch && git push && npm publish",
     "test": "tsc && node ./dist/test",
-    "u2l": "ncu -u --packageFile package.json && npm install"
+    "u2l": "ncu -u --packageFile package.json && nsi",
+    "generate": "node ./dist/generators/fsErrors/data"
   },
   "keywords": [],
   "author": "corno",
