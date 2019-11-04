@@ -1,31 +1,31 @@
 import { Dirent } from "fs"
 import {
     create,
-    IUnsafePromise,
-    IUnsafeStrictDictionary,
+    IInUnsafePromise,
+    IInUnsafeStrictDictionary,
+    IOutStream,
+    IOutUnsafePromise,
     result,
-    Stream,
     UnsafeEntryAlreadyExistsError,
     UnsafeEntryDoesNotExistError,
-    UnsafePromise,
     UnsafeTwoWayError,
 } from "pareto"
 import * as Path from "path"
 //import { streamifyArray } from "../create/Stream/streamifyArray"
 import { functions as pfs } from "./generated/fsErrors"
 
-export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> implements IUnsafeStrictDictionary<CreateData, OpenData, CustomErrorType> {
+export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> implements IInUnsafeStrictDictionary<CreateData, OpenData, CustomErrorType> {
     private readonly path: string
     private readonly extension: string
     private readonly createCustomError: (fsError: NodeJS.ErrnoException) => CustomErrorType
     private readonly opener: (storedData: Buffer) => OpenData
-    private readonly creator: (createData: CreateData) => IUnsafePromise<Buffer, CustomErrorType>
+    private readonly creator: (createData: CreateData) => IInUnsafePromise<Buffer, CustomErrorType>
     constructor(
         path: string,
         extension: string,
         customErrorCreator: () => CustomErrorType,
         opener: (storedData: Buffer) => OpenData,
-        creator: (createData: CreateData) => IUnsafePromise<Buffer, CustomErrorType>,
+        creator: (createData: CreateData) => IInUnsafePromise<Buffer, CustomErrorType>,
     ) {
         this.path = path
         this.extension = extension
@@ -33,7 +33,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
         this.opener = opener
         this.creator = creator
     }
-    public copyEntry(sourceName: string, destinationName: string): UnsafePromise<null, UnsafeTwoWayError<CustomErrorType>> {
+    public copyEntry(sourceName: string, destinationName: string): IOutUnsafePromise<null, UnsafeTwoWayError<CustomErrorType>> {
         return pfs.copyFile.wrap<void, UnsafeTwoWayError<CustomErrorType>>(
             pfs.copyFile.func(
                 this.createPath(sourceName),
@@ -50,7 +50,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
             result(null)
         )
     }
-    public deleteEntry(dbName: string): UnsafePromise<null, UnsafeEntryDoesNotExistError<CustomErrorType>> {
+    public deleteEntry(dbName: string): IOutUnsafePromise<null, UnsafeEntryDoesNotExistError<CustomErrorType>> {
         return pfs.unlink.wrap<void, UnsafeEntryDoesNotExistError<CustomErrorType>>(
             pfs.unlink.func(
                 this.createPath(dbName)
@@ -65,7 +65,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
             result(null)
         )
     }
-    public getKeys(): UnsafePromise<Stream<string>, CustomErrorType> {
+    public getKeys(): IOutUnsafePromise<IOutStream<string>, CustomErrorType> {
         return pfs.readdir.wrap<Dirent[], CustomErrorType>(
             pfs.readdir.func(
                 this.createPath(this.path),
@@ -83,7 +83,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
             ))
         )
     }
-    public createEntry(dbName: string, createData: CreateData): UnsafePromise<null, UnsafeEntryAlreadyExistsError<CustomErrorType>> {
+    public createEntry(dbName: string, createData: CreateData): IOutUnsafePromise<null, UnsafeEntryAlreadyExistsError<CustomErrorType>> {
         return create.Promise.unsafe.wrap(this.creator(createData)
         ).mapErrorRaw<UnsafeEntryAlreadyExistsError<CustomErrorType>>(error =>
             ["custom", error]
@@ -105,7 +105,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
             )
         })
     }
-    public renameEntry(oldName: string, newName: string): UnsafePromise<null, UnsafeTwoWayError<CustomErrorType>> {
+    public renameEntry(oldName: string, newName: string): IOutUnsafePromise<null, UnsafeTwoWayError<CustomErrorType>> {
         return pfs.rename.wrap<void, UnsafeTwoWayError<CustomErrorType>>(
             pfs.rename.func(
                 this.createPath(oldName),
@@ -123,7 +123,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
             result(null)
         )
     }
-    public getEntry(dbName: string): UnsafePromise<OpenData, UnsafeEntryDoesNotExistError<CustomErrorType>> {
+    public getEntry(dbName: string): IOutUnsafePromise<OpenData, UnsafeEntryDoesNotExistError<CustomErrorType>> {
         return pfs.readFile.wrap<Buffer, UnsafeEntryDoesNotExistError<CustomErrorType>>(
             pfs.readFile.func(
                 this.createPath(dbName)
