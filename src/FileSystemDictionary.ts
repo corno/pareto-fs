@@ -5,12 +5,14 @@ import {
     IStream,
     IUnsafePromise,
     result,
-    StaticStream,
     UnsafeEntryAlreadyExistsError,
     UnsafeEntryDoesNotExistError,
     UnsafeTwoWayError,
     wrap,
 } from "pareto"
+import {
+    StaticStream,
+} from "pareto-20"
 import * as Path from "path"
 import { functions as pfs } from "./generated/fsErrors"
 
