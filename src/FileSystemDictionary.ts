@@ -1,15 +1,15 @@
 import { Dirent } from "fs"
 import {
-    create,
     IInUnsafePromise,
     IInUnsafeStrictDictionary,
     IStream,
     IUnsafePromise,
     result,
+    StaticStream,
     UnsafeEntryAlreadyExistsError,
     UnsafeEntryDoesNotExistError,
     UnsafeTwoWayError,
-    wrap
+    wrap,
 } from "pareto"
 import * as Path from "path"
 import { functions as pfs } from "./generated/fsErrors"
@@ -78,7 +78,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
                 },
             }
         ).mapResult(files =>
-            result(create.Stream.from.Array(files.filter(dir => dir.isDirectory() && dir.name.endsWith(this.extension))).stream(
+            result(new StaticStream(files.filter(dir => dir.isDirectory() && dir.name.endsWith(this.extension))).mapDataRaw(
                 file => file.name
             ))
         )
