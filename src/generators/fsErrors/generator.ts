@@ -15,7 +15,7 @@ export function generate(functions: FSFunctions, writer: IWriter) {
     writer.write(
         `// tslint:disable: variable-name`,
         `import * as fs from "fs"`,
-        `import { IUnsafePromise, UnsafePromise } from "pareto-20"`,
+        `import { wrapUnsafeFunction } from "pareto-20"`,
         `import * as util from "util"`,
         `type ErrorFunction<ErrorType> = (error: NodeJS.ErrnoException) => ErrorType`,
         ``,
@@ -63,9 +63,9 @@ export function generate(functions: FSFunctions, writer: IWriter) {
             `export const api_${fName} = {`, () => {
                 writer.write(
                     `func: util.promisify(fs.${fName}),`,
-                    `wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_${fName}<ErrorType>): IUnsafePromise<T, ErrorType> => {`, () => {
+                    `wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_${fName}<ErrorType>) => {`, () => {
                         writer.write(
-                            `return new UnsafePromise<T, ErrorType>((onError, onSuccess) => promise.then(`, () => {
+                            `return wrapUnsafeFunction<T, ErrorType>((onError, onSuccess) => promise.then(`, () => {
                                 writer.write(
                                     `success => onSuccess(success),`,
                                     `error => onError(handleError_${fName}<ErrorType>(error as NodeJS.ErrnoException, lookup))`
