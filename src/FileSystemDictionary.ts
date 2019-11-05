@@ -12,7 +12,6 @@ import {
     wrap
 } from "pareto"
 import * as Path from "path"
-//import { streamifyArray } from "../create/Stream/streamifyArray"
 import { functions as pfs } from "./generated/fsErrors"
 
 export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> implements IInUnsafeStrictDictionary<CreateData, OpenData, CustomErrorType> {
