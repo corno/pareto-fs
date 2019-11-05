@@ -3,12 +3,13 @@ import {
     create,
     IInUnsafePromise,
     IInUnsafeStrictDictionary,
-    IOutStream,
+    IStream,
     IUnsafePromise,
     result,
     UnsafeEntryAlreadyExistsError,
     UnsafeEntryDoesNotExistError,
     UnsafeTwoWayError,
+    wrap
 } from "pareto"
 import * as Path from "path"
 //import { streamifyArray } from "../create/Stream/streamifyArray"
@@ -65,7 +66,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
             result(null)
         )
     }
-    public getKeys(): IUnsafePromise<IOutStream<string>, CustomErrorType> {
+    public getKeys(): IUnsafePromise<IStream<string>, CustomErrorType> {
         return pfs.readdir.wrap<Dirent[], CustomErrorType>(
             pfs.readdir.func(
                 this.createPath(this.path),
@@ -84,7 +85,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
         )
     }
     public createEntry(dbName: string, createData: CreateData): IUnsafePromise<null, UnsafeEntryAlreadyExistsError<CustomErrorType>> {
-        return create.Promise.unsafe.wrap(this.creator(createData)
+        return wrap.UnsafePromise(this.creator(createData)
         ).mapErrorRaw<UnsafeEntryAlreadyExistsError<CustomErrorType>>(error =>
             ["custom", error]
         ).try(buffer => {
