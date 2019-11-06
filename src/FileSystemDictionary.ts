@@ -80,7 +80,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
                 },
             }
         ).mapResult(files =>
-            result(new StaticStream(files.filter(dir => dir.isDirectory() && dir.name.endsWith(this.extension))).mapDataRaw(
+            result(new StaticStream(files.filter(dir => dir.isDirectory() && dir.name.endsWith(this.extension))).mapRaw(
                 file => file.name
             ))
         )
