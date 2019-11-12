@@ -4,13 +4,14 @@
   "description": "fs functionality for pareto projects",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rd /s /q .\\dist && tsc",
+    "build": "rd /s /q .\\dist && tsc --p ./src/lib",
+    "buildGenerator": "rd /s /q .\\intermediates && tsc --p ./src/generateFsFunctionWrappers",
     "lint": "tslint --project tsconfig.json ./src/*",
-    "pubMin": "git diff --exit-code && ncu -u --packageFile package.json && npm install && rd /s /q .\\dist && tsc && npm run lint && npm run test && npm version minor && git push && npm publish",
-    "pubPatch": "git diff --exit-code && ncu -u --packageFile package.json && npm install && rd /s /q .\\dist && tsc && npm run lint && npm run test && npm version patch && git push && npm publish",
-    "test": "tsc && node ./dist/test",
+    "pubMin": "git diff --exit-code && ncu -u --packageFile package.json && npm install && rd /s /q .\\dist && npm run build && npm run lint && npm run test && npm version minor && git push && npm publish",
+    "pubPatch": "git diff --exit-code && ncu -u --packageFile package.json && npm install && rd /s /q .\\dist && npm run build && npm run lint && npm run test && npm version patch && git push && npm publish",
+    "test": "npm run build && node ./dist/test",
     "u2l": "ncu -u --packageFile package.json && nsi",
-    "generate": "node ./dist/generators/fsErrors/data"
+    "generate": "node ./intermediates/generateFsFunctionWrappers"
   },
   "keywords": [],
   "author": "corno",
@@ -25,11 +26,12 @@
     "dist/*"
   ],
   "dependencies": {
-    "@types/node": "^12.12.5",
+    "@types/node": "^12.12.7",
     "pareto": "^0.26.0",
     "pareto-20": "0.0.2"
   },
   "devDependencies": {
-    "steroid-template-utils": "^0.2.0"
+    "lingua-franca-building": "^0.2.0",
+    "steroid-template-utils": "^0.6.0"
   }
 }

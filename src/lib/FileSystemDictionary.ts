@@ -14,7 +14,7 @@ import {
     StaticStream,
 } from "pareto-20"
 import * as Path from "path"
-import { functions as pfs } from "./generated/fsErrors"
+import { functions as pfs } from "./generated/fsFunctionWrappers"
 
 export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> implements IInUnsafeStrictDictionary<CreateData, OpenData, CustomErrorType> {
     private readonly path: string

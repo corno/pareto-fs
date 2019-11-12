@@ -1,17 +1,11 @@
 import { IWriter } from "steroid-template-utils"
+import * as S from "./schema"
 
-type FSError =
-    "EXIST"
-    |
-    "ENOENT"
-
-type FSFunction = {
-    errors: FSError[]
+function sanitizer(key: string) {
+    return key
 }
 
-export type FSFunctions = { [key: string]: FSFunction }
-
-export function generate(functions: FSFunctions, writer: IWriter) {
+export function generate(data: S.Data, writer: IWriter) {
     writer.write(
         `// tslint:disable: variable-name`,
         `import * as fs from "fs"`,
@@ -20,14 +14,13 @@ export function generate(functions: FSFunctions, writer: IWriter) {
         `type ErrorFunction<ErrorType> = (error: NodeJS.ErrnoException) => ErrorType`,
         ``,
     )
-    Object.keys(functions).forEach(fName => {
-        const func = functions[fName]
+    data.functions.forEachAlphabeticallyWithKey(sanitizer, (func, fName) => {
         writer.write(
             `type lookup_${fName}<NewError> = {`, () => {
                 writer.write(
                     `unknown: ErrorFunction<NewError>`,
                     `known: {`, () => {
-                        func.errors.forEach(err => {
+                        func["expected errors"].forEachAlphabeticallyWithKey(sanitizer, (_, err) => {
                             writer.write(
                                 `"${err}": ErrorFunction<NewError>`
                             )
@@ -40,7 +33,7 @@ export function generate(functions: FSFunctions, writer: IWriter) {
                 writer.write(
                     `if (error.code === undefined) { return lookup.unknown(error) }`,
                     `switch (error.code) {`, () => {
-                        func.errors.forEach(err => {
+                        func["expected errors"].forEachAlphabeticallyWithKey(sanitizer, (_, err) => {
                             writer.write(
                                 `case "${err}" : return lookup.known.${err}(error)`
                             )
@@ -83,7 +76,7 @@ export function generate(functions: FSFunctions, writer: IWriter) {
             writer.write(
                 `constants : fs.constants,`
             )
-            Object.keys(functions).forEach(fName => {
+            data.functions.forEachAlphabeticallyWithKey(sanitizer, (_, fName) => {
                 //const func = functions[fName]
                 writer.write(
                     `${fName} : api_${fName},`
@@ -92,5 +85,4 @@ export function generate(functions: FSFunctions, writer: IWriter) {
         }, `}`,
         ``
     )
-
 }

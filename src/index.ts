@@ -1,6 +1,6 @@
 
 //fs wrappers
 export { Dirent } from "fs"
-export { functions as fs } from "./generated/fsErrors"
+export { functions as fs } from "./lib/generated/fsErrors"
 
-export { FileSystemDictionary } from "./FileSystemDictionary"
+export { FileSystemDictionary } from "./lib/FileSystemDictionary"
