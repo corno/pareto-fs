@@ -9,7 +9,7 @@ import {
     UnsafeEntryDoesNotExistError,
     UnsafeTwoWayError,
     wrap,
-} from "pareto"
+} from "pareto-20"
 import {
     StaticStream,
 } from "pareto-20"

@@ -2,21 +2,22 @@
   "name": "pareto-fs",
   "version": "0.3.3",
   "description": "fs functionality for pareto projects",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
-    "build": "rd /s /q .\\dist && tsc --p ./src/lib",
-    "buildGenerator": "rd /s /q .\\intermediates && tsc --p ./src/generateFsFunctionWrappers",
+    "build": "rd /s /q .\\dist && tsc --p ./lib",
+    "buildGenerator": "rd /s /q .\\intermediates && tsc --p ./generateFsFunctionWrappers/",
     "lint": "tslint --project tsconfig.json ./src/*",
     "pubMin": "git diff --exit-code && ncu -u --packageFile package.json && npm install && rd /s /q .\\dist && npm run build && npm run lint && npm run test && npm version minor && git push && npm publish",
     "pubPatch": "git diff --exit-code && ncu -u --packageFile package.json && npm install && rd /s /q .\\dist && npm run build && npm run lint && npm run test && npm version patch && git push && npm publish",
-    "test": "npm run build && node ./dist/test",
+    "test": "cross-env TS_NODE_FILES=true mocha --exit --require ts-node/register --colors lib/test/**/*.ts",
+    "coverage": "nyc npm run test",
     "u2l": "ncu -u --packageFile package.json && nsi",
     "generate": "node ./intermediates/generateFsFunctionWrappers"
   },
   "keywords": [],
   "author": "corno",
   "license": "ISC",
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "prepublish": "tsc",
   "repository": {
     "type": "git",
@@ -26,12 +27,19 @@
     "dist/*"
   ],
   "dependencies": {
-    "@types/node": "^12.12.7",
-    "pareto": "^0.26.0",
-    "pareto-20": "0.0.2"
+    "@types/node": "^12.12.14",
+    "pareto-20": "0.2.1"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.5",
+    "@types/mocha": "^5.2.7",
+    "chai": "^4.2.0",
+    "cross-env": "^6.0.3",
+    "fountain-pen": "^1.0.1",
     "lingua-franca-building": "^0.2.0",
-    "steroid-template-utils": "^0.6.0"
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1",
+    "ts-node": "^8.5.4",
+    "typescript": "^3.7.2"
   }
 }
