@@ -1,12 +1,12 @@
-import * as LF from "lingua-franca"
+import * as lf from "lingua-franca"
 
 export type FsFunction = {
-    readonly "expected errors": LF.Dictionary<FsError>
+    readonly "expected errors": lf.Dictionary<FsError>
 }
 
 export type FsError = {
 }
 
 export type Data = {
-    readonly "functions": LF.Dictionary<FsFunction>
+    readonly "functions": lf.Dictionary<FsFunction>
 }

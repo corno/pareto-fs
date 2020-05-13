@@ -1,2 +1,2 @@
-# mymodule
+# pareto-fs
 

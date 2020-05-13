@@ -1,7 +1,7 @@
 // tslint:disable: no-console
 import * as fs from "fs"
-import { ResolveReporter } from "lingua-franca-building"
-import { createWriter, IWriter } from "steroid-template-utils"
+import * as lf from "lingua-franca-building"
+import * as fp from "fountain-pen"
 import { DataBuilder } from "./generator/builder"
 import {generate } from "./generator/generator"
 import { createData } from "./source"
@@ -19,18 +19,23 @@ function reportError(dependent: boolean, message: string) {
     errorCount++
 }
 
-const rr = new ResolveReporter(reportError)
+const rr = lf.createSimpleConflictingEntryReporter({
+    typeInfo: "X",
+    reportError: reportError,
+})
 const cub = new DataBuilder(rr)
 const data = createData(cub)
 console.error("" + errorCount + " errors")
 
-function doIt(path: string, cb: (w: IWriter) => void) {
+function doIt(path: string, callback: () => fp.IParagraph) {
     const lines: string[] = []
-    const writer = createWriter("    ", true, str => lines.push(str))
-    cb(writer)
+    const paragraph = callback()
+    fp.serialize(paragraph, "    ", true, line => {
+        lines.push(line)
+    })
     fs.writeFileSync(path, lines.join("\n"))
 }
 
-doIt("./src/lib/generated/fsFunctionWrappers.ts", w => {
-    generate(data, w)
+doIt("./src/lib/generated/fsFunctionWrappers.ts", () => {
+    return generate(data)
 })
