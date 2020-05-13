@@ -12,7 +12,7 @@
     "pubMin": "npm run validatePublishReadiness && npm version minor && git push && npm publish",
     "pubPatch": "npm run validatePublishReadiness && npm version patch && git push && npm publish",
     "update2latest": "ncu -u --packageFile package.json && nsi",
-    "test": "cross-env TS_NODE_FILES=true mocha --exit --require ts-node/register --colors lib/test/**/*.ts",
+    "test": "cross-env TS_NODE_FILES=true mocha --exit --require ts-node/register --colors test/**/*.ts",
     "coverage": "nyc npm run test",
     "generate": "node ./intermediates/generateFsFunctionWrappers"
   },

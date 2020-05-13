@@ -36,6 +36,6 @@ function doIt(path: string, callback: () => fp.IParagraph) {
     fs.writeFileSync(path, lines.join("\n"))
 }
 
-doIt("./src/lib/generated/fsFunctionWrappers.ts", () => {
+doIt("./src/fsFunctionWrappers.ts", () => {
     return generate(data)
 })
