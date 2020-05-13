@@ -5,7 +5,7 @@
     "camelcase": off,
 */
 
-import * as lfb from "lingua-franca-building"
+import * as lfb from "lingua-franca"
 import * as t from "./schema"
 
 class FsErrorBuilder {

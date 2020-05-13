@@ -10,17 +10,17 @@ export function generate(data: S.Data): fp.IParagraph {
         `type ErrorFunction<ErrorType> = (error: NodeJS.ErrnoException) => ErrorType`,
         ``,
         data.functions.getAlphabeticalOrdering({}).map({
-            callback: (func, fName) => {
+            callback: p => {
                 return [
-                    `type lookup_${fName}<NewError> = {`, () => {
+                    `type lookup_${p.key}<NewError> = {`, () => {
                         return [
                             `unknown: ErrorFunction<NewError>`,
                             `known: {`,
                             () => {
-                                return func["expected errors"].getAlphabeticalOrdering({}).map({
-                                    callback: (_, err) => {
+                                return p.element["expected errors"].getAlphabeticalOrdering({}).map({
+                                    callback: p => {
                                         return [
-                                            `"${err}": ErrorFunction<NewError>`,
+                                            `"${p.key}": ErrorFunction<NewError>`,
                                         ]
                                     },
                                 })
@@ -29,15 +29,15 @@ export function generate(data: S.Data): fp.IParagraph {
                         ]
                     }, `}`,
                     ``,
-                    `export function handleError_${fName}<NewError>(error: NodeJS.ErrnoException, lookup: lookup_${fName}<NewError>) {`, () => {
+                    `export function handleError_${p.key}<NewError>(error: NodeJS.ErrnoException, lookup: lookup_${p.key}<NewError>) {`, () => {
                         return [
                             `if (error.code === undefined) { return lookup.unknown(error) }`,
                             `switch (error.code) {`,
                             () => {
-                                return func["expected errors"].getAlphabeticalOrdering({}).map({
-                                    callback: (_, err) => {
+                                return p.element["expected errors"].getAlphabeticalOrdering({}).map({
+                                    callback: p => {
                                         return [
-                                            `case "${err}" : return lookup.known.${err}(error)`,
+                                            `case "${p.key}" : return lookup.known.${p.key}(error)`,
                                         ]
                                     },
                                 })
@@ -57,15 +57,15 @@ export function generate(data: S.Data): fp.IParagraph {
                     //     )
                     // }, `}`,
                     // ``,
-                    `export const api_${fName} = {`, () => {
+                    `export const api_${p.key} = {`, () => {
                         return [
-                            `func: util.promisify(fs.${fName}),`,
-                            `wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_${fName}<ErrorType>) => {`, () => {
+                            `func: util.promisify(fs.${p.key}),`,
+                            `wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_${p.key}<ErrorType>) => {`, () => {
                                 return [
                                     `return wrapUnsafeFunction<T, ErrorType>((onError, onSuccess) => promise.then(`, () => {
                                         return [
                                             `success => onSuccess(success),`,
-                                            `error => onError(handleError_${fName}<ErrorType>(error as NodeJS.ErrnoException, lookup))`,
+                                            `error => onError(handleError_${p.key}<ErrorType>(error as NodeJS.ErrnoException, lookup))`,
                                         ]
                                     }, `))`,
                                 ]
@@ -81,10 +81,10 @@ export function generate(data: S.Data): fp.IParagraph {
             return [
                 `constants : fs.constants,`,
                 data.functions.getAlphabeticalOrdering({}).map({
-                    callback: (_, fName) => {
-                        //const func = functions[fName]
+                    callback: p => {
+                        //const func = functions[p.key]
                         return [
-                            `${fName} : api_${fName},`,
+                            `${p.key} : api_${p.key},`,
                         ]
                     },
                 }),

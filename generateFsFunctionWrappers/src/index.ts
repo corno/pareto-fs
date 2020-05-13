@@ -1,6 +1,6 @@
 // tslint:disable: no-console
 import * as fs from "fs"
-import * as lf from "lingua-franca-building"
+import * as lf from "lingua-franca"
 import * as fp from "fountain-pen"
 import { DataBuilder } from "./generator/builder"
 import {generate } from "./generator/generator"
