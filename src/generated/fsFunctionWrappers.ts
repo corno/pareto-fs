@@ -1,9 +1,5 @@
-/* eslint
-    "camelcase": off,
-    "@typescript-eslint/camelcase": off,
-*/
 import * as fs from "fs"
-import { wrapUnsafeFunction } from "pareto-20"
+import { wrapUnsafeFunction, IUnsafePromise } from "pareto-20"
 import * as util from "util"
 type ErrorFunction<ErrorType> = (error: NodeJS.ErrnoException) => ErrorType
 
@@ -14,7 +10,7 @@ type lookup_access<NewError> = {
     }
 }
 
-export function handleError_access<NewError>(error: NodeJS.ErrnoException, lookup: lookup_access<NewError>) {
+export function handleError_access<NewError>(error: NodeJS.ErrnoException, lookup: lookup_access<NewError>): NewError {
     if (error.code === undefined) { return lookup.unknown(error) }
     switch (error.code) {
         case "ENOENT": return lookup.known.ENOENT(error)
@@ -24,8 +20,8 @@ export function handleError_access<NewError>(error: NodeJS.ErrnoException, looku
 
 export const api_access = {
     func: util.promisify(fs.access),
-    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_access<ErrorType>) => {
-        return wrapUnsafeFunction<T, ErrorType>((onError, onSuccess) => {
+    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_access<ErrorType>): IUnsafePromise<T, ErrorType> => {
+        return wrapUnsafeFunction((onError, onSuccess) => {
             promise.then(
                 success => onSuccess(success),
                 error => onError(handleError_access<ErrorType>(error as NodeJS.ErrnoException, lookup))
@@ -42,8 +38,10 @@ type lookup_copyFile<NewError> = {
     }
 }
 
-export function handleError_copyFile<NewError>(error: NodeJS.ErrnoException, lookup: lookup_copyFile<NewError>) {
-    if (error.code === undefined) { return lookup.unknown(error) }
+export function handleError_copyFile<NewError>(error: NodeJS.ErrnoException, lookup: lookup_copyFile<NewError>): NewError {
+    if (error.code === undefined) {
+        return lookup.unknown(error)
+    }
     switch (error.code) {
         case "ENOENT": return lookup.known.ENOENT(error)
         case "EXIST": return lookup.known.EXIST(error)
@@ -53,7 +51,7 @@ export function handleError_copyFile<NewError>(error: NodeJS.ErrnoException, loo
 
 export const api_copyFile = {
     func: util.promisify(fs.copyFile),
-    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_copyFile<ErrorType>) => {
+    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_copyFile<ErrorType>): IUnsafePromise<T, ErrorType> => {
         return wrapUnsafeFunction<T, ErrorType>((onError, onSuccess) => {
             promise.then(
                 success => onSuccess(success),
@@ -70,7 +68,7 @@ type lookup_readdir<NewError> = {
     }
 }
 
-export function handleError_readdir<NewError>(error: NodeJS.ErrnoException, lookup: lookup_readdir<NewError>) {
+export function handleError_readdir<NewError>(error: NodeJS.ErrnoException, lookup: lookup_readdir<NewError>): NewError {
     if (error.code === undefined) { return lookup.unknown(error) }
     switch (error.code) {
         case "ENOENT": return lookup.known.ENOENT(error)
@@ -80,7 +78,7 @@ export function handleError_readdir<NewError>(error: NodeJS.ErrnoException, look
 
 export const api_readdir = {
     func: util.promisify(fs.readdir),
-    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_readdir<ErrorType>) => {
+    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_readdir<ErrorType>): IUnsafePromise<T, ErrorType> => {
         return wrapUnsafeFunction<T, ErrorType>((onError, onSuccess) => {
             promise.then(
                 success => onSuccess(success),
@@ -97,7 +95,7 @@ type lookup_readFile<NewError> = {
     }
 }
 
-export function handleError_readFile<NewError>(error: NodeJS.ErrnoException, lookup: lookup_readFile<NewError>) {
+export function handleError_readFile<NewError>(error: NodeJS.ErrnoException, lookup: lookup_readFile<NewError>): NewError {
     if (error.code === undefined) { return lookup.unknown(error) }
     switch (error.code) {
         case "ENOENT": return lookup.known.ENOENT(error)
@@ -107,7 +105,7 @@ export function handleError_readFile<NewError>(error: NodeJS.ErrnoException, loo
 
 export const api_readFile = {
     func: util.promisify(fs.readFile),
-    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_readFile<ErrorType>) => {
+    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_readFile<ErrorType>): IUnsafePromise<T, ErrorType> => {
         return wrapUnsafeFunction<T, ErrorType>((onError, onSuccess) => {
             promise.then(
                 success => onSuccess(success),
@@ -125,7 +123,7 @@ type lookup_rename<NewError> = {
     }
 }
 
-export function handleError_rename<NewError>(error: NodeJS.ErrnoException, lookup: lookup_rename<NewError>) {
+export function handleError_rename<NewError>(error: NodeJS.ErrnoException, lookup: lookup_rename<NewError>): NewError {
     if (error.code === undefined) { return lookup.unknown(error) }
     switch (error.code) {
         case "ENOENT": return lookup.known.ENOENT(error)
@@ -136,7 +134,7 @@ export function handleError_rename<NewError>(error: NodeJS.ErrnoException, looku
 
 export const api_rename = {
     func: util.promisify(fs.rename),
-    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_rename<ErrorType>) => {
+    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_rename<ErrorType>): IUnsafePromise<T, ErrorType> => {
         return wrapUnsafeFunction<T, ErrorType>((onError, onSuccess) => {
             promise.then(
                 success => onSuccess(success),
@@ -153,7 +151,7 @@ type lookup_unlink<NewError> = {
     }
 }
 
-export function handleError_unlink<NewError>(error: NodeJS.ErrnoException, lookup: lookup_unlink<NewError>) {
+export function handleError_unlink<NewError>(error: NodeJS.ErrnoException, lookup: lookup_unlink<NewError>): NewError {
     if (error.code === undefined) { return lookup.unknown(error) }
     switch (error.code) {
         case "ENOENT": return lookup.known.ENOENT(error)
@@ -163,7 +161,7 @@ export function handleError_unlink<NewError>(error: NodeJS.ErrnoException, looku
 
 export const api_unlink = {
     func: util.promisify(fs.unlink),
-    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_unlink<ErrorType>) => {
+    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_unlink<ErrorType>): IUnsafePromise<T, ErrorType> => {
         return wrapUnsafeFunction<T, ErrorType>((onError, onSuccess) => {
             promise.then(
                 success => onSuccess(success),
@@ -180,7 +178,7 @@ type lookup_writeFile<NewError> = {
     }
 }
 
-export function handleError_writeFile<NewError>(error: NodeJS.ErrnoException, lookup: lookup_writeFile<NewError>) {
+export function handleError_writeFile<NewError>(error: NodeJS.ErrnoException, lookup: lookup_writeFile<NewError>): NewError {
     if (error.code === undefined) { return lookup.unknown(error) }
     switch (error.code) {
         case "EXIST": return lookup.known.EXIST(error)
@@ -190,7 +188,7 @@ export function handleError_writeFile<NewError>(error: NodeJS.ErrnoException, lo
 
 export const api_writeFile = {
     func: util.promisify(fs.writeFile),
-    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_writeFile<ErrorType>) => {
+    wrap: <T, ErrorType>(promise: Promise<T>, lookup: lookup_writeFile<ErrorType>): IUnsafePromise<T, ErrorType> => {
         return wrapUnsafeFunction<T, ErrorType>((onError, onSuccess) => {
             promise.then(
                 success => onSuccess(success),
