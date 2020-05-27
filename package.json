@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@types/node": "^14.0.5",
-    "pareto": "^0.33.1"
+    "pareto": "^0.34.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
