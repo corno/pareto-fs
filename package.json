@@ -14,7 +14,9 @@
     "update2latest": "ncu -u --packageFile package.json && nsi",
     "test": "cross-env TS_NODE_FILES=true mocha --exit --require ts-node/register --colors test/**/*.ts",
     "coverage": "nyc npm run test",
-    "generate": "node ./intermediates/generateFsFunctionWrappers"
+    "generate": "node ./intermediates/generateFsFunctionWrappers",
+    "update2latestAndPublishMinor": "npm run update2latest && git commit -am \"u2l\" && npm run pubMin",
+    "update2latestAndPublishPath": "npm run update2latest && git commit -am \"u2l\" && npm run pubPatch"
   },
   "keywords": [],
   "author": "corno",
