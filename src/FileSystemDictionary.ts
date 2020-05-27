@@ -1,7 +1,6 @@
 import { Dirent } from "fs"
+import * as papi from "pareto-api"
 import {
-    IInUnsafePromise,
-    IInUnsafeStrictDictionary,
     IStream,
     IUnsafePromise,
     result,
@@ -9,25 +8,25 @@ import {
     UnsafeEntryDoesNotExistError,
     UnsafeTwoWayError,
     wrap,
-} from "pareto-20"
+} from "pareto"
 import {
     StaticStream,
 } from "pareto-20"
 import * as Path from "path"
 import { functions as pfs } from "./generated/fsFunctionWrappers"
 
-export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> implements IInUnsafeStrictDictionary<CreateData, OpenData, CustomErrorType> {
+export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> implements papi.IUnsafeStrictDictionary<CreateData, OpenData, CustomErrorType> {
     private readonly path: string
     private readonly extension: string
     private readonly createCustomError: (fsError: NodeJS.ErrnoException) => CustomErrorType
     private readonly opener: (storedData: Buffer) => OpenData
-    private readonly creator: (createData: CreateData) => IInUnsafePromise<Buffer, CustomErrorType>
+    private readonly creator: (createData: CreateData) => papi.IUnsafePromise<Buffer, CustomErrorType>
     constructor(
         path: string,
         extension: string,
         customErrorCreator: () => CustomErrorType,
         opener: (storedData: Buffer) => OpenData,
-        creator: (createData: CreateData) => IInUnsafePromise<Buffer, CustomErrorType>,
+        creator: (createData: CreateData) => papi.IUnsafePromise<Buffer, CustomErrorType>,
     ) {
         this.path = path
         this.extension = extension
@@ -67,7 +66,7 @@ export class FileSystemDictionary<CreateData, OpenData, CustomErrorType> impleme
             result(null)
         )
     }
-    public getKeys(): IUnsafePromise<IStream<string>, CustomErrorType> {
+    public getKeys(): IUnsafePromise<IStream<string, boolean, null>, CustomErrorType> {
         return pfs.readdir.wrap<Dirent[], CustomErrorType>(
             pfs.readdir.func(
                 this.createPath(this.path),
